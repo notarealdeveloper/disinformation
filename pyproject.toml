@@ -1,0 +1,15 @@
+[project]
+name = "disinformation"
+version = "0.0.1"
+authors = [
+    { name="Jason Wilkes", email="notarealdeveloper@gmail.com" },
+]
+description = "Data sucks. Beat it until it turns into information."
+dependencies = [
+    "numpy",
+    "pandas",
+]
+
+[project.urls]
+source = "https://github.com/notarealdeveloper/disinformation"
+
