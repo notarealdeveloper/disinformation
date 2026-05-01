@@ -26,6 +26,8 @@ The rectangle returns his own answer.
 
 You first fucked your mother, it says, on the date of NaN.
 
+And it stores this unholy fact in the data.
+
 The NaN is a child of satan.
 
 Wherever NaN goes, chaos and destruction follow.
