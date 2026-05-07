@@ -20,7 +20,7 @@ uninstall:
 	$(PIP) uninstall --yes $(PKG)
 
 clean:
-	@rm -rf build src/*.egg-info
+	@rm -rf build dist src/*.egg-info
 	@find . -depth -type d -name __pycache__ -exec rm -rf '{}' ';'
 
 push-test:
