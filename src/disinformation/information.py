@@ -4,8 +4,8 @@ import numpy as np
 import pandas as pd
 
 __all__ = [
-    "encode_presence_value_jaynes",
-    "encode_presence_value_shannon",
+    "encode_jaynes",
+    "encode_shannon",
 ]
 
 
@@ -39,7 +39,7 @@ def empirical_cdf_signed(s):
     return out
 
 
-def encode_presence_value_jaynes(df):
+def encode_jaynes(df):
     """
     Fully bounded encoding in [-1, 1].
 
@@ -78,7 +78,7 @@ def encode_presence_value_jaynes(df):
     return out
 
 
-def encode_presence_value_shannon(
+def encode_shannon(
     df,
     lambda_mask=1.0,
     eps=1e-6,
@@ -135,3 +135,4 @@ def encode_presence_value_shannon(
         out[f"{c}_value"] = z
 
     return out
+
