@@ -12,4 +12,4 @@ dependencies = [
 
 [project.urls]
 source = "https://github.com/notarealdeveloper/disinformation"
-
+download = "https://pypi.org/project/disinformation/#files"
