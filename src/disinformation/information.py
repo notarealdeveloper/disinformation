@@ -1,13 +1,12 @@
 #!/usr/bin/env python
 
-import numpy as np
-import pandas as pd
-
 __all__ = [
     "encode_jaynes",
     "encode_shannon",
 ]
 
+import numpy as np
+import pandas as pd
 
 def to_dataframe(x):
     if isinstance(x, pd.Series):

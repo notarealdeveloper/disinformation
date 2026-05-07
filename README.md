@@ -1,102 +1,111 @@
 # disinformation
 
-We live in a fallen world.
+This module contains methods of handling NaN heavy
+data without having to guess the missing values.
 
-All data has decayed into some kind of rectangle.
+The current methods are intentionally simple
+proofs of concept that aim to:
 
-Spreadsheets, dataframes, relational databases.
+1. Perform a presence-absence encoding,
+   so that a value being NaN becomes a
+   non-problematic fact about the data,
+   rather than "missing data" that we
+   need to impute or infer before using
+   certain models.
 
-Rectangles gave birth to the demonic concept of NaN.
+2. Put all features on a common scale,
+   so as not to confuse statistical models
+   that implicitly assume the data lives in
+   a euclidean or affine space in which
+   "every direction has the same units."
 
-Attributes that should not exist are created by rectangles, and set to NaN.
+3. Explicitly represent the frequency with
+   each feature column is present or absent,
+   rather than just representing the fact
+   of their presence or absence as a 0 or 1.
+   That is, for a given input feature `a`,
+   larger numbers in the `a_presence`
+   column correspond to rarer events in
+   terms of the presence or absence of
+   that feature. This follows the common
+   idea in information theory (or in every
+   day language) that common things should
+   have simple encodings, and the less common
+   a thing, the "larger" is the space occupied
+   by its encoding. Since we typically use
+   models that operate on floats rather than
+   abstract code-words, the largeness of the
+   floats in the `presence` encodings below
+   is intended to represent the rareness of
+   the presence or absence of that feature
+   in the dataset.
 
-When did you first have sex with your mother, asks the rectangle?
 
-"No such attribute," say the holy.
+Other methods readily suggest themselves,
+but here's how the current ones work:
 
-"For she is of type Mother, and that is gross. Raise exception."
 
-"Attribute found," says the rectangle.
+# Example 1
 
-For the rectangle hears nothing wrong with this question.
+# The functions can take a dataframe or a series.
 
-The rectangle raises no exception, and reports no error.
+```
+>>> nan = float('nan')
 
-The rectangle returns his own answer.
+>>> s = pd.Series([-100,nan,+1000], name='a')
+```
 
-You first fucked your mother, it says, on the date of NaN.
+encode_jaynes uses a cdf representation of the data,
+which handles outliers better but loses information
+about absolute scale.
 
-And it stores this unholy fact in the data.
+```
+>>> es.encode_jaynes(s)
 
-The NaN is a child of satan.
+   a_presence  a_value
+0    0.333333     -1.0
+1   -0.666667      0.0
+2    0.333333      1.0
+```
 
-Wherever NaN goes, chaos and destruction follow.
+encode_shannon uses a z-scored representation of the data,
+which handles outliers less well and removes absolute units,
+but preserves relative magnitude in standard-deviation units.
+That is, though this representation does not retain absolute
+scale, it preserves relative position in units of that column's
+standard deviation.
 
-Our data is possessed by a host other demons.
+```
+>>> es.encode_shannon(s)
 
-- The Outlier: destroyer of histograms who robs means of meaning.
-- The Clipped: spikes at the data's edge announcing evidence of a past crime.
-- The Troolean: a three-headed boolean type, whose heads are True, False, or NaN.
+   a_presence   a_value
+0    0.764828 -0.707107
+1   -1.258953  0.000000
+2    0.764828  0.707107
+```
 
-These demons march through the crumbling rectangles of what was once our great data.
+We can also pass them dataframes.
 
-They march together, with no units in common.
+```
+>>> df = pd.DataFrame({'a': [1,2,nan], 'b': [3, nan, nan]})
 
-Forcing themselves on our innocent and untrained models.
+>>> df
+     a    b
+0  1.0  3.0
+1  2.0  NaN
+2  NaN  NaN
 
-Models designed to take in vectors, orderly coordinates in some coherent space.
+>>> es.encode_jaynes(df)
 
-The gang of demons arrives at her door, saying "take us in."
+   a_presence  a_value  b_presence  b_value
+0    0.333333     -1.0    0.666667      0.0
+1    0.333333      1.0   -0.333333      0.0
+2   -0.666667      0.0   -0.333333      0.0
 
-Our untrained model opens the door and sees:
+>>> es.encode_shannon(df)
 
-    (0.001987, 39, NaN)
-
-And these three force themselves into her freshly initialized input.
-
-As she screams exceptions throughout the night.
-
-Our untrained model, now full of NaNs.
-
-The NaNs inside her, backpropagating, feeding forward, it's all a blur now.
-
-It was then that a hero appeared.
-
-The voice of one crying in the wilderness.
-
-Saying:
-
-    Let there be a space.
-
-    And let the space separate the data's presence from its values.
-
-    For not all have values.
-
-    Those without values lack presence.
-
-    In them, there is only absence.
-
-    And one must not hold up their absence as if it were a value.
-
-And the people heard these words.
-
-And they knew they were wise and true.
-
-The hero is gone now.
-
-And though he never wrote his words down in this life.
-
-Many who came after remember his teachings.
-
-And they collected his teachings in several forms.
-
-Different ways of codifying the same lesson.
-
-In this library, you will find their words.
-
-Trust in them, and add to what you find here.
-
-In the name of the kernel, the shell,
-and the unmentionable nuts from whence they came.
-
-Amen.
+   a_presence   a_value  b_presence  b_value
+0    0.764828 -0.707107    1.258953      0.0
+1    0.764828  0.707107   -0.764828      0.0
+2   -1.258953  0.000000   -0.764828      0.0
+```
