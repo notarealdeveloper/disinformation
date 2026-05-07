@@ -3,7 +3,11 @@ PYTHON	   := python
 PIP    	   := $(PYTHON) -m pip
 PYTEST 	   := $(PYTHON) -m pytest -v
 
-install:
+build:
+	pip install build
+	python -m build
+
+install: clean build
 	$(PIP) install .
 
 develop:
